@@ -8,7 +8,7 @@
 confirm() ->
     application:start(inets),
     lager:info("Deploy some nodes"),
-    Nodes = rt:build_cluster(4, [], [
+    Nodes = rt:build_cluster(20, [], [
                                      {riak_core, [{default_bucket_props,
                                                    [
                                                        {n_val, 2},

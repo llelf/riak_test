@@ -30,7 +30,7 @@
 -define(VAL2, val2).
 
 confirm() ->
-    Nodes = rt:build_cluster(5),
+    Nodes = rt:build_cluster(20),
     ok = test_fold_full_prefix(Nodes),
     ok = test_metadata_conflicts(Nodes),
     ok = test_writes_after_partial_cluster_failure(Nodes),
