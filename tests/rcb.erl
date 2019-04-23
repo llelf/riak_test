@@ -48,24 +48,29 @@ confirm() ->
 
     [ begin
           P = last_write_wins,
-          lager:info("[~p][~p/~p] setting ~p=~p", [I,K,Node,P,V]),
+          lager:info("[~p][~p] setting ~p=~p", [I,K,P,V]),
 
           %Node = lists:nth(random:uniform(length(Nodes)), Nodes),
-          set(C,P,V)
+          multiset(Nodes,Conns,P,V)
       end
       ||
         %% [{P,V,_}|_] <- [?PROPS],
         I <- lists:seq(1,1024),
 
         V <- [true,false],
-        K <- lists:seq(1,4),
-        {Node,C} <- lists:zip(Nodes,Conns)
+        K <- lists:seq(1,4)
+        %{Node,C} <- lists:zip(Nodes,Conns)
     ],
 
     pass.
 
-%% multiset(Nodes, P, V) ->
-%%     implement_me.
+shuffle(XS) -> lists:sort(fun(_,_) -> random:uniform(2) > 1 end, XS).
+
+multiset(_Nodes, OrdConns, P, V) ->
+    Me = self(),
+    Conns = shuffle(OrdConns),
+    [ spawn(fun() -> Me ! set(C,P,V) end) || C <- Conns ],
+    [ receive ok -> ok end || _ <- Conns ].
 
 set(C, P, V) ->
     %C = rt:pbc(Node),
