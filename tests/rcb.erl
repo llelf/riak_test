@@ -25,24 +25,24 @@
          {young_vclock, 0, 20}
         ]).
 
--define(BUCKET, <<"foo">>).
+-define(Type,   <<"s">>).
+-define(Bucket, {?Type,<<"foo">>}).
 
 confirm() ->
     N=20,
     [Node1|_] = Nodes = rt:build_cluster(N),
     rt:wait_until_nodes_ready(Nodes),
 
-    Type = <<"s">>,
     Props = [ {allow_mult, false},
               {dvv_enabled, false},
               {last_write_wins, true}
             ],
 
-    rt:create_and_activate_bucket_type(Node1, Type, Props),
-    rt:wait_until_bucket_type_status(Type, active, Nodes),
+    rt:create_and_activate_bucket_type(Node1, ?Type, Props),
+    rt:wait_until_bucket_type_status(?Type, active, Nodes),
 
     %% @TODO don't wait???????
-    rt:wait_until_bucket_props(Nodes, {Type, <<"bucket">>}, Props),
+    rt:wait_until_bucket_props(Nodes, ?Bucket, Props),
 
     Conns = [ rt:pbc(Node) || Node <- Nodes ],
 
@@ -74,5 +74,5 @@ multiset(_Nodes, OrdConns, P, V) ->
 
 set(C, P, V) ->
     %C = rt:pbc(Node),
-    riakc_pb_socket:set_bucket(C, ?BUCKET, [{P, V}]).
+    riakc_pb_socket:set_bucket(C, ?Bucket, [{P, V}]).
 
