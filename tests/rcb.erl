@@ -26,7 +26,7 @@ confirm() ->
           lager:info("[~p][~p] setting ~p=~p", [I,K,P,V]),
 
           %Node = rt:select_random(Nodes),
-          multiset(Nodes,Conns,P,V)
+          ok = multiset(Nodes,Conns,P,V)
       end
       ||
         I <- lists:seq(1,1024),
@@ -45,7 +45,8 @@ multiset(Nodes, OrdConns, P, V) ->
     {Conns,Ordering} = lists:unzip(shuffle(lists:zip(OrdConns, lists:seq(1,N)))),
     lager:info(" - ~p", [Ordering]),
     [ spawn(fun() -> Me ! set(C,P,V) end) || C <- Conns ],
-    [ receive ok -> ok end || _ <- Conns ].
+    [ receive ok -> ok end || _ <- Conns ],
+    ok.
 
 set(C, P, V) ->
     %C = rt:pbc(Node),
